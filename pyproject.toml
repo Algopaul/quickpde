@@ -23,6 +23,10 @@ dev = [
   "yapf",
   "pytest",
   "isort",
+  "sphinx",
+  "furo",
+  "myst-parser",
+  "sphinx-autodoc-typehints",
 ]
 
 [tool.setuptools]

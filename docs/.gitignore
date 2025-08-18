@@ -1,0 +1,12 @@
+# Ignore built documentation
+_build/
+
+# Ignore auto-generated API stubs (but keep manual index.rst)
+api/*.rst
+!api/index.rst
+
+# Ignore autosummary cache (if enabled)
+_autosummary/
+
+# Jupyter artifacts if you mix notebooks in docs
+**/.ipynb_checkpoints/
