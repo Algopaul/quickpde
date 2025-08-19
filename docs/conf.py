@@ -13,6 +13,7 @@ extensions = [
     "sphinx.ext.viewcode",  # Link to highlighted source
     "sphinx.ext.intersphinx",  # Cross-link to other projects (optional)
     "sphinx.ext.mathjax",  # Cross-link to other projects (optional)
+    "sphinx_copybutton",
 ]
 autosummary_generate = True  # auto-generate summary pages
 autodoc_default_options = {
@@ -32,6 +33,9 @@ intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
 
 # If you prefer Markdown as the primary content format:
 myst_enable_extensions = ["deflist", "colon_fence"]
+
+copybutton_prompt_text = r">>> |\.\.\. "  # Strip Python prompts
+copybutton_prompt_is_regexp = True
 
 myst_enable_extensions = [
     "amsmath",

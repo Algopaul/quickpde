@@ -18,7 +18,7 @@ def main(cfg: Config) -> None:
   solver = get_ode_solver(rhs, cfg)
   trajectory, timepoints = solver(field)
   logging.info('Generated trajectory with shape %s', trajectory.shape)
-  with h5py.File('test.h5', 'w') as f:
+  with h5py.File(f'data/test_{cfg.injection_rate:.2f}.h5', 'w') as f:
     f.create_dataset('data', data=trajectory)
     f.create_dataset('time', data=timepoints)
   pass

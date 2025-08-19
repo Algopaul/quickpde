@@ -6,6 +6,7 @@ from typing import Tuple
 class Config:
   tag: str = 'default'
   pde: str = 'rotation_2d'
+  domain_dim: int = 2
   # Grid
   axis_points: int = 128
   bound_x: Tuple[float, float] = (0.0, 1.0)
@@ -15,4 +16,8 @@ class Config:
   t_end: float = 1.0
   store_every: int = 1
   # IC
-  ic_sharpness: float = 10.0
+  ic_sharpness: float = 1.0
+  # PDE
+  viscosity: float = 1e-2
+  # RDE
+  injection_rate: float = 3.0

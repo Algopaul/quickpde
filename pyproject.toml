@@ -27,6 +27,7 @@ dev = [
   "furo",
   "myst-parser",
   "sphinx-autodoc-typehints",
+  "sphinx-copybutton",
 ]
 
 [tool.setuptools]

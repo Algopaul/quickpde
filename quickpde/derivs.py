@@ -1,7 +1,17 @@
 import jax.numpy as jnp
 
 
-def central_deriv(stepsize, axis):
+def upwind_deriv(stepsize, axis):
+  """Upwind derivative (given direction)"""
+
+  def deriv(field):
+    fm = jnp.roll(field, 1, axis=axis)
+    return (field - fm) / stepsize
+
+  return deriv
+
+
+def central_deriv(stepsize, axis, order=1):
   """Central difference with periodic wrap.
 
   Args:
@@ -9,10 +19,18 @@ def central_deriv(stepsize, axis):
     axis (int): axis to differentiate along
   """
 
-  def deriv(field):
-    fp = jnp.roll(field, -1, axis=axis)
-    fm = jnp.roll(field, 1, axis=axis)
-    return (fp - fm) / (2.0 * stepsize)
+  if order == 1:
+
+    def deriv(field):
+      fp = jnp.roll(field, -1, axis=axis)
+      fm = jnp.roll(field, 1, axis=axis)
+      return (fp - fm) / (2.0 * stepsize)
+  elif order == 2:
+
+    def deriv(field):
+      fp = jnp.roll(field, -1, axis=axis)
+      fm = jnp.roll(field, 1, axis=axis)
+      return (-2 * field + fp + fm) / (stepsize**2)
 
   return deriv
 
