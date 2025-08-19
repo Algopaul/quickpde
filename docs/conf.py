@@ -37,3 +37,14 @@ myst_enable_extensions = [
     "amsmath",
     "dollarmath",  # support $...$ and $$...$$
 ]
+
+mathjax3_config = {
+    "tex": {
+        "macros": {
+            "R": r"\mathbb{R}",
+            "C": r"\mathbb{C}",
+            # with arguments
+            "frobsq": [r"\left\lVert #1 \right\rVert_F^2", 1],
+        }
+    }
+}

@@ -1,12 +1,7 @@
-from dataclasses import dataclass
-
 from hydra.core.config_store import ConfigStore
 
-
-@dataclass
-class Config:
-  tag: str = 'default'
-
+import quickpde.config.defaults
+from quickpde.config.base import Config
 
 cs = ConfigStore.instance()
 cs.store(name='config', node=Config)

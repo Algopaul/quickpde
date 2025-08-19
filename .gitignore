@@ -21,7 +21,6 @@ poetry.lock
 
 # Other
 *.DS_Store
-config/
 
 # PyCharm
 .idea
