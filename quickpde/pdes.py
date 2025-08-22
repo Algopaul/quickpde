@@ -1,13 +1,14 @@
-from abc import ABC, abstractmethod, abstractproperty
+from abc import ABC, abstractmethod
 from typing import Callable
 
+import initial_conditions as ic
 import jax
 import jax.numpy as jnp
 
 from quickpde import derivs
 from quickpde.config import Config
 from quickpde.grid import get_grid
-from quickpde.odesolve import get_ode_solver
+from quickpde.odesolve import get_ode_solver, get_rk
 
 
 class PDE(ABC):
@@ -38,7 +39,8 @@ class PDE(ABC):
   def solve(self, cfg: Config):
     x0 = self.initial_condition(cfg)
     if self.solver is None:
-      self.solver = get_ode_solver(self.rhs, cfg)
+      step = get_rk(self.rhs, cfg.dt)
+      self.solver = get_ode_solver(step, cfg)
     return self.solver(x0)
 
 
@@ -61,8 +63,7 @@ class Rotation2d(PDE):
     return rhs
 
   def initial_condition(self, cfg):
-    (X, Y), _ = get_grid(cfg)
-    return jnp.exp(-cfg.ic_sharpness * ((X - 1.0)**2 + Y**2))
+    return ic.init_bump(cfg)
 
 
 @PDE.register('rde_1d')
@@ -105,3 +106,78 @@ class RDE1d(PDE):
     eta_0 = 3 / 2 * (1.0 / jnp.cosh(x - 1.0))**2
     lam_0 = jnp.zeros_like(x)
     return jnp.hstack((eta_0, lam_0))
+
+
+@PDE.register('vorticity')
+class Vorticity(PDE):
+
+  def __init__(self, cfg: Config):
+    self.rhs = lambda _: ValueError('Vortex is defined as discrete')
+    self.step = self.get_step(cfg)
+
+  def solve(self, cfg: Config):
+    x0 = self.initial_condition(cfg)
+    if self.solver is None:
+      self.solver = get_ode_solver(self.step, cfg)
+    return self.solver(x0)
+
+  def initial_condition(self, cfg: Config):
+    if cfg.vorticity.initial == 'random':
+      n = cfg.axis_points
+      return ic.gaussian_random_field(
+          1.0,
+          n,
+          n,
+          cfg.vorticity.random_freq_decay,
+          cfg.vorticity.random_seed,
+      )
+    elif cfg.vorticity.initial == 'twobump':
+      return ic.double_bump(cfg)
+
+  def get_step(self, cfg: Config):
+
+    n = cfg.axis_points
+    dx = (cfg.bound_x[1] - cfg.bound_x[0]) / n
+    dt = cfg.dt
+
+    ddx = derivs.fourier_deriv(n, dx, axis=0)
+    ddy = derivs.fourier_deriv(n, dx, axis=1)
+    poisson_solve = derivs.periodic_poisson_solver(n, dx)
+    K = derivs.wave_numbers(n, dx)
+    kx = K[:, None]
+    ky = K[None, :]
+    ksq = kx**2 + ky**2
+    ksq_hyp = jnp.abs(ksq)
+    ksq_hyp /= jnp.max(ksq_hyp)
+
+    # Constants
+    hyperviscosity_mag: float = 1e3
+    hyperviscosity_exp: int = 8
+
+    def viscosity_term(fhat):
+      return cfg.viscosity * jnp.real(jnp.fft.ifft2(ksq * fhat))
+
+    def hyperviscosity_term(fhat):
+      damping = -ksq_hyp**hyperviscosity_exp
+      return hyperviscosity_mag * jnp.real(jnp.fft.ifft2(damping * fhat))
+
+    def rhsuv(field, u, v):
+      return -(u * ddx(field) + v * ddy(field))
+
+    @jax.jit
+    def rk4_mod(i, field):
+      del i
+      psi = poisson_solve(field)
+      u = ddy(psi)
+      v = -ddx(psi)
+      k1 = rhsuv(field, u, v)
+      k2 = rhsuv(field + 0.5 * dt * k1, u, v)
+      k3 = rhsuv(field + 0.5 * dt * k2, u, v)
+      k4 = rhsuv(field + dt * k3, u, v)
+      f = field + (dt / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
+      fhat = jnp.fft.fft2(field)
+      f = f + dt * viscosity_term(fhat)
+      fhat = jnp.fft.fft2(f)
+      return f + dt * hyperviscosity_term(fhat)
+
+    return rk4_mod

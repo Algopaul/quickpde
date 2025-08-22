@@ -4,8 +4,7 @@ import jax.numpy as jnp
 from quickpde.config import Config
 
 
-def get_ode_solver(rhs, cfg: Config):
-  step = get_rk(rhs, cfg.dt)
+def get_ode_solver(step, cfg: Config):
   timepoints = jnp.arange(0, cfg.t_end, cfg.dt)
 
   def solve(x0):

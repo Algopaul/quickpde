@@ -35,6 +35,10 @@ def central_deriv(stepsize, axis, order=1):
   return deriv
 
 
+def wave_numbers(n_modes, stepsize):
+  return (2j * jnp.pi) * jnp.fft.fftfreq(n_modes, d=stepsize)
+
+
 def fourier_deriv(n_modes, stepsize, axis, order=1):
   """Spectral derivative via FFT (periodic).
   
@@ -49,7 +53,7 @@ def fourier_deriv(n_modes, stepsize, axis, order=1):
         "Fourier derivs only implemented for order 1 or 2")
 
   # Base multiplier for d/dx in Fourier space is (i * 2π * f)
-  base_k = (2j * jnp.pi) * jnp.fft.fftfreq(n_modes, d=stepsize)
+  base_k = wave_numbers(n_modes, stepsize)
   if order == 1:
     kvec = base_k
   else:  # order == 2
@@ -73,3 +77,17 @@ def fourier_deriv(n_modes, stepsize, axis, order=1):
     return jnp.real(out)
 
   return ddx
+
+
+def periodic_poisson_solver(n_modes, stepsize):
+  K = wave_numbers(n_modes, stepsize)
+  Ksq = K**2
+  ones = jnp.ones((n_modes, n_modes))
+  K2 = -Ksq[:, None] * ones - Ksq[None, :] * ones
+  invK2 = 1 / K2
+  invK2 = invK2.at[0, 0].set(0.0)
+
+  def solver(field):
+    return -jnp.real(jnp.fft.ifft2(invK2 * jnp.fft.fft2(field)))
+
+  return solver

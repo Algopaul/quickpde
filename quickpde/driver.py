@@ -6,8 +6,6 @@ import jax
 import jax.numpy as jnp
 
 from quickpde.config import Config
-from quickpde.initial_conditions import get_initial_condition
-from quickpde.odesolve import get_ode_solver
 from quickpde.pdes import PDE
 from quickpde.util import log_duration
 
@@ -15,7 +13,6 @@ from quickpde.util import log_duration
 @hydra.main(version_base=None, config_name='config', config_path='../conf')
 @log_duration
 def main(cfg: Config) -> None:
-  field = get_initial_condition(cfg)
   pde = PDE.from_config(cfg)
   trajectory, timepoints = pde.solve(cfg)
   jax.block_until_ready(trajectory)

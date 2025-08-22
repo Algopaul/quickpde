@@ -1,7 +1,7 @@
 import jax.numpy as jnp
 from hydra.core.config_store import ConfigStore
 
-from quickpde.config.base import Config
+from quickpde.config.base import Config, VorticityConfig
 
 default_rotation = Config(
     'rotation',
@@ -25,6 +25,21 @@ default_rde = Config(
     viscosity=1e-4,
 )
 
+default_vorticity = Config(
+    'vorticity',
+    pde='vorticity',
+    domain_dim=2,
+    axis_points=64,
+    bound_x=(-jnp.pi, jnp.pi),
+    bound_y=(-jnp.pi, jnp.pi),
+    dt=2e-3,
+    t_end=200,
+    store_every=200,
+    ic_sharpness=5.0,
+    vorticity=VorticityConfig('twobump', bump_distance=2.0),
+)
+
 cs = ConfigStore.instance()
 cs.store(name="rotation", node=default_rotation)
 cs.store(name="rde", node=default_rde)
+cs.store(name="vorticity", node=default_vorticity)

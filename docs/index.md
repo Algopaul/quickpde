@@ -15,5 +15,6 @@ api/index
 api/modules
 RDE
 Rotation2d
+Vorticity
 ```
 
