@@ -15,12 +15,12 @@ Simple 2d rotation PDE: One field in a 2-dimensional spatial domain $[-\pi,\pi)^
 ```
 The default initial condition is $u_0(\boldsymbol{x})=\exp(-80((x_1-1)^2 + x_2^2))$, where $\boldsymbol{x}=[x_1, x_2]$.
 
-The right-hand side of this PDE is implemented in {py:func}`quickpde.pdes.rotation_2d`
+The right-hand side of this PDE is implemented in {py:func}`quickpde.pdes.Rotation2d.get_rhs`
 
 The solution just moves the bump in a circle. Trajectory snapshot matrices will have a slow singular value decay, but the solutions are conceptually very simple, so this is a nice example for nonlinear model order reduction methods.
 
 ```bash
-python quickpde/driver -cn rotation
+python quickpde/driver.py -cn rotation
 ```
 
 ## Citation

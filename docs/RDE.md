@@ -29,7 +29,12 @@ and $\lambda(x,0)=0$.
 - injection term $\beta(\eta(x, t); \mu)=\frac{\mu}{1+\exp(r(\eta(x, t)-\eta_p))}$, where $\eta_p=0.5$, $r=5$, and injection parameter $\mu=3.5$
 - energy loss function $\xi(\eta(x,t))=-\epsilon\eta(x, t)$, $\epsilon=0.11$
 
-The right-hand side of this PDE is implemented in {py:func}`quickpde.pdes.rde_1d`
+The right-hand side of this PDE is implemented in {py:func}`quickpde.pdes.RDE1d.get_rhs`
+
+```bash
+python quickpde/driver.py -cn rde
+```
+
 
 ## Citation
 

@@ -12,6 +12,7 @@ Moreover, we include an option for random initialization, so we can generate tra
 :hidden:
 
 api/index
+api/modules
 RDE
 Rotation2d
 ```
