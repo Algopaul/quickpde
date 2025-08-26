@@ -19,6 +19,7 @@ The right-hand side of this PDE is implemented in {py:func}`quickpde.pdes.Rotati
 
 The solution just moves the bump in a circle. Trajectory snapshot matrices will have a slow singular value decay, but the solutions are conceptually very simple, so this is a nice example for nonlinear model order reduction methods.
 
+
 ```bash
 python quickpde/driver.py -cn rotation
 ```

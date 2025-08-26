@@ -35,7 +35,6 @@ The right-hand side of this PDE is implemented in {py:func}`quickpde.pdes.RDE1d.
 python quickpde/driver.py -cn rde
 ```
 
-
 ## Citation
 
 ```bibtex

@@ -16,5 +16,3 @@ in the domain $[-\pi, \pi)^2$.
 We use a stream-function $\Psi(\boldsymbol{x})$ with $-\Delta \Psi = \omega$, $\partial_y \Psi = u_1$, and $\partial_x \Psi = -u_2$, where $\boldsymbol{u}=[u_1, u_2]^\top$.
 
 We are interested in low/no-viscosity evolutions and thus set add a hyper-viscosity term ($\kappa\nabla^8 \omega$) to remove high frequency noise.
-
-
