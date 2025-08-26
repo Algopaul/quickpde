@@ -1,9 +1,11 @@
 # Shallow Water 2d
 
 
+## Explanation
 ```bash
 python quickpde/driver.py -cn swe2d
 ```
+
 ## Citation
 
 ```bibtex
