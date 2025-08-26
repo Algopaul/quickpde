@@ -1,5 +1,10 @@
 # Wave 2d
 
+## Explanation
+```bash
+python quickpde/driver.py -cn wave2d
+```
+
 ## Citation
 ```bibtex
 @Article{SchwerdtnerSBP2024Nonlinear,

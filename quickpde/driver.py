@@ -22,11 +22,7 @@ def main(cfg: Config) -> None:
       trajectory.shape,
       trajectory.dtype,
   )
-  with h5py.File(f'data/test_{cfg.injection_rate:.2f}.h5', 'w') as f:
-    # trajectory = jnp.reshape(
-    #     trajectory, [trajectory.shape[0], 2, trajectory.shape[-1] // 2])
-    # trajectory = jnp.transpose(trajectory, [0, 2, 1])
-    # trajectory = jnp.stack(jnp.split(trajectory, 500))
+  with h5py.File(cfg.outfile, 'w') as f:
     logging.info('Storing trajectory with shape %s', trajectory.shape)
     f.create_dataset('data', data=trajectory)
     f.create_dataset('time', data=timepoints)

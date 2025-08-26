@@ -46,6 +46,7 @@ swe = Config(
     dt=1e-3,
     t_end=10,
     viscosity=0.0,
+    store_every=80,
     ic_sharpness=2.7,
 )
 

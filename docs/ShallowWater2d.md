@@ -1,6 +1,9 @@
 # Shallow Water 2d
 
 
+```bash
+python quickpde/driver.py -cn swe2d
+```
 ## Citation
 
 ```bibtex
