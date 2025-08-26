@@ -108,6 +108,64 @@ class RDE1d(PDE):
     return jnp.hstack((eta_0, lam_0))
 
 
+@PDE.register('swe2d')
+class ShallowWater(PDE):
+
+  def __init__(self, cfg: Config):
+    self.rhs = self.get_rhs(cfg)
+
+  def initial_condition(self, cfg: Config):
+    n = cfg.axis_points
+    (X, Y), _ = get_grid(cfg)
+    h = 1 + 0.33 * ic.gaussian_bump_2d(X, Y, [0.0, 0.0], cfg)
+    phi = 0 * X
+    return jnp.stack((h, phi))
+
+  def get_rhs(self, cfg: Config):
+    n = cfg.axis_points
+    _, stepsize = get_grid(cfg)
+    d_dx = derivs.fourier_deriv(n, stepsize, 0)
+    d_dy = derivs.fourier_deriv(n, stepsize, 1)
+
+    def rhs(state):
+      h, phi = state
+      dh_dt = -(d_dx(h * d_dx(phi)) + d_dy(h * d_dy(phi)))
+      dphi_dt = -0.5 * (d_dx(phi)**2 + d_dy(phi)**2) - h
+      return jnp.stack((dh_dt, dphi_dt))
+
+    return rhs
+
+
+@PDE.register('wave2d')
+class Wave(PDE):
+
+  def __init__(self, cfg: Config):
+    self.rhs = self.get_rhs(cfg)
+
+  def initial_condition(self, cfg: Config):
+    n = cfg.axis_points
+    (X, Y), _ = get_grid(cfg)
+    rho0 = ic.gaussian_bump_2d(X, Y, [0.0, 0], cfg)
+    vx = 0 * X
+    vy = 0 * Y
+    return jnp.stack((rho0, vx, vy))
+
+  def get_rhs(self, cfg: Config):
+    n = cfg.axis_points
+    _, stepsize = get_grid(cfg)
+    d_dx = derivs.central_deriv(stepsize, 0)
+    d_dy = derivs.central_deriv(stepsize, 1)
+
+    def rhs(state):
+      rho, vx, vy = state
+      drho_dt = -(d_dx(vx) + d_dy(vy))
+      dvx_dt = -d_dx(rho)
+      dvy_dt = -d_dy(rho)
+      return jnp.stack((drho_dt, dvx_dt, dvy_dt))
+
+    return rhs
+
+
 @PDE.register('vorticity')
 class Vorticity(PDE):
 

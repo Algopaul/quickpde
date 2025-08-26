@@ -25,11 +25,35 @@ default_rde = Config(
     viscosity=1e-4,
 )
 
+default_wave = Config(
+    'wave',
+    pde='wave2d',
+    domain_dim=2,
+    axis_points=512,
+    bound_x=(-jnp.pi, jnp.pi),
+    dt=1e-3,
+    t_end=8,
+    viscosity=0.0,
+)
+
+swe = Config(
+    'swe',
+    pde='swe2d',
+    domain_dim=2,
+    axis_points=256,
+    bound_x=(-jnp.pi, jnp.pi),
+    bound_y=(-jnp.pi, jnp.pi),
+    dt=1e-3,
+    t_end=10,
+    viscosity=0.0,
+    ic_sharpness=2.7,
+)
+
 default_vorticity = Config(
     'vorticity',
     pde='vorticity',
     domain_dim=2,
-    axis_points=64,
+    axis_points=128,
     bound_x=(-jnp.pi, jnp.pi),
     bound_y=(-jnp.pi, jnp.pi),
     dt=2e-3,
@@ -43,3 +67,5 @@ cs = ConfigStore.instance()
 cs.store(name="rotation", node=default_rotation)
 cs.store(name="rde", node=default_rde)
 cs.store(name="vorticity", node=default_vorticity)
+cs.store(name="wave2d", node=default_wave)
+cs.store(name="swe2d", node=swe)

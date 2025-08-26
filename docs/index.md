@@ -16,5 +16,7 @@ api/modules
 RDE
 Rotation2d
 Vorticity
+ShallowWater2d
+Wave2d
 ```
 

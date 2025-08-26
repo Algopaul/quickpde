@@ -18,6 +18,7 @@ class Config:
   tag: str = 'default'
   pde: str = 'rotation_2d'
   domain_dim: int = 2
+  use_double_precision: bool = False
   # Grid
   axis_points: int = 128
   bound_x: Tuple[float, float] = (0.0, 1.0)

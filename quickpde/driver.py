@@ -3,7 +3,6 @@ import logging
 import h5py
 import hydra
 import jax
-import jax.numpy as jnp
 
 from quickpde.config import Config
 from quickpde.pdes import PDE
@@ -13,10 +12,16 @@ from quickpde.util import log_duration
 @hydra.main(version_base=None, config_name='config', config_path='../conf')
 @log_duration
 def main(cfg: Config) -> None:
+  if cfg.use_double_precision:
+    jax.config.update('jax_enable_x64', True)
   pde = PDE.from_config(cfg)
   trajectory, timepoints = pde.solve(cfg)
   jax.block_until_ready(trajectory)
-  logging.info('Generated trajectory with shape %s', trajectory.shape)
+  logging.info(
+      'Generated trajectory with shape %s and dtype=%s',
+      trajectory.shape,
+      trajectory.dtype,
+  )
   with h5py.File(f'data/test_{cfg.injection_rate:.2f}.h5', 'w') as f:
     # trajectory = jnp.reshape(
     #     trajectory, [trajectory.shape[0], 2, trajectory.shape[-1] // 2])
