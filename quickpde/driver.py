@@ -23,7 +23,11 @@ def main(cfg: Config) -> None:
       trajectory.dtype,
   )
   with h5py.File(cfg.outfile, 'w') as f:
-    logging.info('Storing trajectory with shape %s', trajectory.shape)
+    logging.info(
+        'Storing trajectory at %s with shape %s',
+        cfg.outfile,
+        trajectory.shape,
+    )
     f.create_dataset('data', data=trajectory)
     f.create_dataset('time', data=timepoints)
   pass
