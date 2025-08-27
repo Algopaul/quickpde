@@ -14,6 +14,7 @@ extensions = [
     "sphinx.ext.intersphinx",  # Cross-link to other projects (optional)
     "sphinx.ext.mathjax",  # Cross-link to other projects (optional)
     "sphinx_copybutton",
+    "sphinx_mathjax_offline",
 ]
 autosummary_generate = True  # auto-generate summary pages
 autodoc_default_options = {

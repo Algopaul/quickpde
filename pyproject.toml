@@ -28,6 +28,7 @@ dev = [
   "myst-parser",
   "sphinx-autodoc-typehints",
   "sphinx-copybutton",
+  "sphinx-mathjax-offline",
 ]
 
 [tool.setuptools]

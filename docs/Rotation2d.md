@@ -13,7 +13,7 @@ Simple 2d rotation PDE: One field in a 2-dimensional spatial domain $[-\pi,\pi)^
 
 \partial_t u= x_1 \partial_{x_2}u - x_2 \partial_{x_1} u,
 ```
-The default initial condition is $u_0(\boldsymbol{x})=\exp(-80((x_1-1)^2 + x_2^2))$, where $\boldsymbol{x}=[x_1, x_2]$.
+The default initial condition is $u_0(\boldsymbol{x})=\exp(-\alpha((x_1-1)^2 + x_2^2))$, where $\boldsymbol{x}=[x_1, x_2]$ and $\alpha$ is the sharpness of the initial condition.
 
 The right-hand side of this PDE is implemented in {py:func}`quickpde.pdes.Rotation2d.get_rhs`
 
