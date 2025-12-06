@@ -54,7 +54,7 @@ default_vorticity = Config(
     'vorticity',
     pde='vorticity',
     domain_dim=2,
-    axis_points=128,
+    axis_points=256,
     bound_x=(-jnp.pi, jnp.pi),
     bound_y=(-jnp.pi, jnp.pi),
     dt=2e-3,

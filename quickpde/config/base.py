@@ -19,7 +19,7 @@ class Config:
   pde: str = 'rotation_2d'
   domain_dim: int = 2
   use_double_precision: bool = False
-  outfile: str = 'trajectory.h5'
+  outfile: str | None = None
   # Grid
   axis_points: int = 128
   bound_x: Tuple[float, float] = (0.0, 1.0)

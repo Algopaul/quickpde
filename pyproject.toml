@@ -2,7 +2,7 @@
 name = "quickpde"
 description = ""
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 version = "0.1.0"
 
 dependencies = [
@@ -15,6 +15,7 @@ dependencies = [
   "humanize",
   "pandas",
   "seaborn",
+  "imageio[ffmpeg] (>=2.37.2,<3.0.0)",
 ]
 
 [project.optional-dependencies]
@@ -29,6 +30,7 @@ dev = [
   "sphinx-autodoc-typehints",
   "sphinx-copybutton",
   "sphinx-mathjax-offline",
+  "sphinx-autobuild"
 ]
 
 [tool.setuptools]

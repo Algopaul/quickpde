@@ -209,7 +209,7 @@ class Vorticity(PDE):
     ksq_hyp /= jnp.max(ksq_hyp)
 
     # Constants
-    hyperviscosity_mag: float = 1e3
+    hyperviscosity_mag: float = 1e0
     hyperviscosity_exp: int = 8
 
     def viscosity_term(fhat):

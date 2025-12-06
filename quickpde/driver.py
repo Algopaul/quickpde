@@ -1,12 +1,27 @@
 import logging
+import os
+from hashlib import md5
+from pathlib import Path
 
 import h5py
 import hydra
 import jax
+from omegaconf import OmegaConf
 
 from quickpde.config import Config
 from quickpde.pdes import PDE
 from quickpde.util import log_duration
+
+
+def get_filename(cfg):
+  if cfg.outfile is None:
+    s = md5(OmegaConf.to_yaml(cfg).encode()).hexdigest()[:10]
+  else:
+    s = cfg.outfile
+  s = s if s.endswith('.h5') else s + '.h5'
+  full_path = Path("data/results") / s
+  full_path.parent.mkdir(parents=True, exist_ok=True)
+  return str(full_path)
 
 
 @hydra.main(version_base=None, config_name='config', config_path='../conf')
@@ -22,10 +37,11 @@ def main(cfg: Config) -> None:
       trajectory.shape,
       trajectory.dtype,
   )
-  with h5py.File(cfg.outfile, 'w') as f:
+  outfile = get_filename(cfg)
+  with h5py.File(outfile, 'w') as f:
     logging.info(
         'Storing trajectory at %s with shape %s',
-        cfg.outfile,
+        outfile,
         trajectory.shape,
     )
     f.create_dataset('data', data=trajectory)
