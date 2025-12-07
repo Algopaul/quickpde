@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import Callable
 
-import initial_conditions as ic
 import jax
 import jax.numpy as jnp
 
+import quickpde.initial_conditions as ic
 from quickpde import derivs
 from quickpde.config import Config
 from quickpde.grid import get_grid
