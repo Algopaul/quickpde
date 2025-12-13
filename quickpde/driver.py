@@ -13,13 +13,13 @@ from quickpde.pdes import PDE
 from quickpde.util import log_duration
 
 
-def get_filename(cfg):
+def get_filename(cfg: Config):
   if cfg.outfile is None:
     s = md5(OmegaConf.to_yaml(cfg).encode()).hexdigest()[:10]
   else:
     s = cfg.outfile
   s = s if s.endswith('.h5') else s + '.h5'
-  full_path = Path("data/results") / s
+  full_path = Path(cfg.outdir) / s
   full_path.parent.mkdir(parents=True, exist_ok=True)
   return str(full_path)
 

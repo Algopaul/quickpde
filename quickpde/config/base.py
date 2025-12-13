@@ -18,6 +18,7 @@ class Config:
   domain_dim: int = 2
   use_double_precision: bool = False
   outfile: str | None = None
+  outdir: str = 'data/results'
   # Grid
   axis_points: int = 128
   bound_x: Tuple[float, float] = (0.0, 1.0)

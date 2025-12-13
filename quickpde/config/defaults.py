@@ -74,15 +74,16 @@ vorticity_grf = Config(
     bound_x=(-2 * jnp.pi, 2 * jnp.pi),
     bound_y=(-2 * jnp.pi, 2 * jnp.pi),
     dt=2e-3,
-    t_end=200,
-    store_every=200,
+    t_end=100,
+    store_every=100,
     ic_sharpness=5.0,
-    vorticity=VorticityConfig('twobump', bump_distance=2.0),
+    vorticity=VorticityConfig('random'),
 )
 
 cs = ConfigStore.instance()
 cs.store(name="rotation", node=default_rotation)
 cs.store(name="rde", node=default_rde)
 cs.store(name="vorticity", node=default_vorticity)
+cs.store(name="vorticity_grf", node=vorticity_grf)
 cs.store(name="wave2d", node=default_wave)
 cs.store(name="swe2d", node=swe)
