@@ -5,10 +5,8 @@ from typing import Tuple
 @dataclass
 class VorticityConfig:
   initial: str = 'random'
-  # if initial==random
   random_freq_decay: float = 2.0
   random_seed: int = 0
-  # if initial == twobump
   bump_distance: float = 1.0
   bump_angle: float = 0.0
 

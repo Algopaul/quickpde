@@ -3,3 +3,6 @@ reload_docs:
 
 cfm_vorticity_medium:
 	.venv/bin/python quickpde/driver.py --multi -cn vorticity vorticity.bump_angle=range\(0,3000\) +env=nrel
+
+cfm_vorticity_grf:
+	.venv/bin/python quickpde/driver.py --multi -cn vorticity vorticity.bump_angle=range\(0,3000\) +env=nrel
