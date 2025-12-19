@@ -73,10 +73,11 @@ vorticity_grf = Config(
     axis_points=256,
     bound_x=(-2 * jnp.pi, 2 * jnp.pi),
     bound_y=(-2 * jnp.pi, 2 * jnp.pi),
-    dt=2e-3,
+    dt=1e-3,
     t_end=100,
-    store_every=100,
+    store_every=1000,
     ic_sharpness=5.0,
+    use_double_precision=True,
     vorticity=VorticityConfig('random'),
 )
 

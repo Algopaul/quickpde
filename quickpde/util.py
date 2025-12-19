@@ -4,6 +4,7 @@ import time
 
 import humanize
 from omegaconf import OmegaConf
+
 from quickpde.config import Config
 
 
@@ -21,4 +22,3 @@ def log_duration(func):
     return result
 
   return wrapper
-

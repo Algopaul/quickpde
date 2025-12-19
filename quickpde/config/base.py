@@ -27,6 +27,7 @@ class Config:
   dt: float = 1e-2
   t_end: float = 1.0
   store_every: int = 1
+  store_type: str = 'f4'
   # IC
   ic_sharpness: float = 1.0
   # PDE

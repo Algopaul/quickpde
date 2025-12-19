@@ -44,8 +44,8 @@ def main(cfg: Config) -> None:
         outfile,
         trajectory.shape,
     )
-    f.create_dataset('data', data=trajectory)
-    f.create_dataset('time', data=timepoints)
+    f.create_dataset('data', data=trajectory, dtype=cfg.store_type)
+    f.create_dataset('time', data=timepoints, dtype=cfg.store_type)
   pass
 
 
