@@ -1,3 +1,6 @@
+from functools import partial
+
+import jax
 import jax.numpy as jnp
 
 
@@ -76,3 +79,44 @@ def energy_spectrum(omega, stepsize, nbins=None):
     k_mid.append(0.5 * (bins[i] + bins[i + 1]))
 
   return jnp.array(k_mid), jnp.array(spec)
+
+
+class RadialFrequencyEnergies:
+
+  def __init__(self, datadim, nbins, kmin=1.0):
+    self.datadim = datadim
+    self.nbins = nbins
+    shell_idx, _ = self._radial_shells_log_bins(datadim, nbins, kmin)
+    self.radial_spectrum = lambda x: self._radial_energy_spectrum(
+        x, shell_idx, nbins)
+
+  @staticmethod
+  def _radial_shells_log_bins(N: int, nbins: int, kmin=1.0):
+    k = jnp.fft.fftfreq(N) * N
+    kx, ky = jnp.meshgrid(k, k, indexing="ij")
+    r = jnp.sqrt(kx**2 + ky**2)
+
+    r_max = jnp.max(r)
+    edges = jnp.logspace(
+        jnp.log10(kmin),
+        jnp.log10(r_max),
+        nbins + 1,
+    )
+
+    shell_idx = jnp.digitize(r, edges) - 1
+    shell_idx = jnp.clip(shell_idx, 0, nbins - 1)
+
+    return shell_idx.astype(jnp.int32), nbins
+
+  def _radial_energy_spectrum(self, u, shell_idx, nbins):
+    U = jnp.fft.fftn(u)
+    E = jnp.abs(U)**2 / u.size
+    spec = jnp.bincount(
+        shell_idx.ravel(),
+        weights=E.ravel(),
+        length=nbins,
+    )
+
+    counts = jnp.bincount(shell_idx.ravel(), length=nbins)
+    spec = spec / jnp.maximum(counts, 1)
+    return jnp.log(spec + 1e-12)
