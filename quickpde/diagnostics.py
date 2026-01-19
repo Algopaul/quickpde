@@ -2,6 +2,7 @@ from functools import partial
 
 import jax
 import jax.numpy as jnp
+import numpy as np
 
 
 def wave_numbers(n_modes, stepsize):
@@ -120,3 +121,78 @@ class RadialFrequencyEnergies:
     counts = jnp.bincount(shell_idx.ravel(), length=nbins)
     spec = spec / jnp.maximum(counts, 1)
     return jnp.log(spec + 1e-12)
+
+
+def gaussian_blur_fft(f, sigma, dx=1.0):
+  """
+    Periodic Gaussian blur of a 2D field using FFT.
+    sigma is in physical units (same as dx).
+    """
+  nx, ny = f.shape
+
+  kx = np.fft.fftfreq(nx, d=dx)
+  ky = np.fft.fftfreq(ny, d=dx)
+  KX, KY = np.meshgrid(kx, ky, indexing="ij")
+
+  G = np.exp(-2 * (np.pi**2) * sigma**2 * (KX**2 + KY**2))
+  return np.real(np.fft.ifft2(np.fft.fft2(f) * G))
+
+
+def topk_numpy(f, k):
+  flat = f.ravel()
+  idx = np.argpartition(flat, -k)[-k:]  # unsorted
+  vals = flat[idx]
+
+  ny = f.shape[1]
+  i = idx // ny
+  j = idx % ny
+
+  # sort descending
+  order = np.argsort(vals)[::-1]
+  return vals[order], i[order], j[order]
+
+
+def enforce_min_separation(i, j, vals, r_min):
+  keep_i = []
+  keep_j = []
+  keep_v = []
+
+  for ii, jj, v in zip(i, j, vals):
+    ok = True
+    for ki, kj in zip(keep_i, keep_j):
+      if (ii - ki)**2 + (jj - kj)**2 < r_min**2:
+        ok = False
+        break
+    if ok:
+      keep_i.append(ii)
+      keep_j.append(jj)
+      keep_v.append(v)
+
+  return (
+      np.array(keep_v),
+      np.array(keep_i),
+      np.array(keep_j),
+  )
+
+
+def find_topk_peaks_fft(
+    f,
+    k=2,
+    sigma=2.0,
+    r_min=2,
+    dx=1.0,
+):
+  f_s = gaussian_blur_fft(f, sigma=sigma, dx=dx)
+  vals, i, j = topk_numpy(f_s, k)
+  vals, i, j = enforce_min_separation(i, j, vals, r_min)
+  return vals, i, j
+
+
+def core_distance(field, dx=1.0):
+  x, y = find_topk_peaks_fft(field)[1:]
+  if len(x) > 1:
+    delta_x = dx * (x[1] - x[0])
+    delta_y = dx * (y[1] - y[0])
+    return np.sqrt(delta_x**2 + delta_y**2)
+  else:
+    return 0.0
