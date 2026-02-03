@@ -15,6 +15,7 @@ extensions = [
     "sphinx.ext.mathjax",  # Cross-link to other projects (optional)
     "sphinx_copybutton",
 ]
+
 autosummary_generate = True  # auto-generate summary pages
 autodoc_default_options = {
     "members": True,
