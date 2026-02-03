@@ -2,7 +2,7 @@
 name = "quickpde"
 description = ""
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 version = "0.1.0"
 
 dependencies = [
@@ -17,6 +17,8 @@ dependencies = [
   "seaborn",
   "imageio[ffmpeg] (>=2.37.2,<3.0.0)",
   "tqdm",
+  "sphinx-autobuild (>=2025.8.25,<2026.0.0)",
+  "zarr (>=3.1.5,<4.0.0)",
 ]
 
 [project.optional-dependencies]
@@ -33,6 +35,9 @@ dev = [
   "sphinx-mathjax-offline",
   "sphinx-autobuild"
 ]
+
+[project.scripts]
+analysis = "quickpde.cli:main"
 
 [tool.setuptools]
 packages = ["quickpde"]
