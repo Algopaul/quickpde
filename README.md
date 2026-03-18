@@ -2,7 +2,7 @@
 
 A lightweight package for generating PDE solution trajectories. Built for use as training data in scientific machine learning.
 
-- Minimal abstractions — PDE structure is not hidden behind layers of framework code
+- Minimal abstractions: PDE structure is not hidden behind layers of framework code
 - [JAX](https://github.com/google/jax)-based numerics with JIT compilation and GPU support
 - Hydra configuration with CLI overrides and multi-run sweeps
 - Zarr output format for efficient storage and access
