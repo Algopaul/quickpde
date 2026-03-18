@@ -3,6 +3,11 @@ from typing import Tuple
 
 
 @dataclass
+class RDEConfig:
+  injection_rate: float = 3.0
+
+
+@dataclass
 class VorticityConfig:
   initial: str = 'random'
   random_freq_decay: float = 2.0
@@ -35,6 +40,5 @@ class Config:
   ic_sharpness: float = 1.0
   # PDE
   viscosity: float = 1e-4
-  # RDE
-  injection_rate: float = 3.0
+  rde: RDEConfig = field(default_factory=RDEConfig)
   vorticity: VorticityConfig = field(default_factory=VorticityConfig)

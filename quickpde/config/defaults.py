@@ -1,7 +1,7 @@
 import jax.numpy as jnp
 from hydra.core.config_store import ConfigStore
 
-from quickpde.config.base import Config, VorticityConfig
+from quickpde.config.base import Config, RDEConfig, VorticityConfig
 
 default_rotation = Config(
     'rotation',
@@ -23,6 +23,7 @@ default_rde = Config(
     dt=1e-3,
     t_end=50,
     viscosity=1e-4,
+    rde=RDEConfig(injection_rate=3.0),
 )
 
 default_wave = Config(

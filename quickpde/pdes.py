@@ -82,7 +82,7 @@ class RDE1d(PDE):
 
     # Parameters
     nu = cfg.viscosity
-    mu = cfg.injection_rate
+    mu = cfg.rde.injection_rate
     # Constants (for now)
     eta_c = 1.1
     alpha = 0.3
