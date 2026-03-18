@@ -24,9 +24,8 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "pylint>=2.6.0",
-  "yapf",
+  "ruff",
   "pytest",
-  "isort",
   "sphinx",
   "furo",
   "myst-parser",
@@ -41,6 +40,12 @@ analysis = "quickpde.cli:main"
 
 [tool.setuptools]
 packages = ["quickpde"]
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
