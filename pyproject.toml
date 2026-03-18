@@ -41,3 +41,7 @@ analysis = "quickpde.cli:main"
 
 [tool.setuptools]
 packages = ["quickpde"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v"

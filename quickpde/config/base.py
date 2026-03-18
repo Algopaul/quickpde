@@ -9,6 +9,9 @@ class VorticityConfig:
   random_seed: int = 0
   bump_distance: float = 1.0
   bump_angle: float = 0.0
+  forcing: bool = False
+  hyperviscosity_mag: float = 5e2
+  hyperviscosity_exp: int = 8
 
 
 @dataclass

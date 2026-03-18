@@ -36,10 +36,13 @@ class PDE(ABC):
   def initial_condition(self, cfg: Config) -> jax.Array:
     pass
 
+  def get_step(self, cfg: Config):
+    return get_rk(self.rhs, cfg.dt)
+
   def solve(self, cfg: Config):
     x0 = self.initial_condition(cfg)
     if self.solver is None:
-      step = get_rk(self.rhs, cfg.dt)
+      step = self.get_step(cfg)
       self.solver = get_ode_solver(step, cfg)
     return self.solver(x0)
 
@@ -169,16 +172,6 @@ class Wave(PDE):
 @PDE.register('vorticity')
 class Vorticity(PDE):
 
-  def __init__(self, cfg: Config):
-    self.rhs = lambda _: ValueError('Vortex is defined as discrete')
-    self.step = self.get_step(cfg)
-
-  def solve(self, cfg: Config):
-    x0 = self.initial_condition(cfg)
-    if self.solver is None:
-      self.solver = get_ode_solver(self.step, cfg)
-    return self.solver(x0)
-
   def initial_condition(self, cfg: Config):
     if cfg.vorticity.initial == 'random':
       n = cfg.axis_points
@@ -191,12 +184,15 @@ class Vorticity(PDE):
       )
     elif cfg.vorticity.initial == 'twobump':
       return ic.double_bump(cfg)
+    else:
+      raise ValueError(f'Unknown vorticity initial condition: {cfg.vorticity.initial}')
 
   def get_step(self, cfg: Config):
 
     n = cfg.axis_points
     dx = (cfg.bound_x[1] - cfg.bound_x[0]) / n
     dt = cfg.dt
+    (_, Y), _ = get_grid(cfg)
 
     ddx = derivs.fourier_deriv(n, dx, axis=0)
     ddy = derivs.fourier_deriv(n, dx, axis=1)
@@ -208,9 +204,8 @@ class Vorticity(PDE):
     ksq_hyp = jnp.abs(ksq)
     ksq_hyp /= jnp.max(ksq_hyp)
 
-    # Constants
-    hyperviscosity_mag: float = 5e2
-    hyperviscosity_exp: int = 8
+    hyperviscosity_mag = cfg.vorticity.hyperviscosity_mag
+    hyperviscosity_exp = cfg.vorticity.hyperviscosity_exp
 
     def viscosity_term(fhat):
       return cfg.viscosity * jnp.real(jnp.fft.ifft2(ksq * fhat))
@@ -220,7 +215,11 @@ class Vorticity(PDE):
       return hyperviscosity_mag * jnp.real(jnp.fft.ifft2(damping * fhat))
 
     def rhsuv(field, u, v):
-      return -(u * ddx(field) + v * ddy(field))
+      if cfg.vorticity.forcing:
+        force = 1.0 * jnp.cos(4 * Y)
+      else:
+        force = 0.0
+      return -(u * ddx(field) + v * ddy(field)) + force
 
     @jax.jit
     def rk4_mod(i, field):

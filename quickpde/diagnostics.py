@@ -1,5 +1,3 @@
-from functools import partial
-
 import jax
 import jax.numpy as jnp
 import numpy as np
@@ -196,3 +194,64 @@ def core_distance(field, dx=1.0):
     return np.sqrt(delta_x**2 + delta_y**2)
   else:
     return 0.0
+
+
+# ---------------------------------------------------------------------------
+# JAX-compatible (JIT/vmap-safe) peak-finding
+# ---------------------------------------------------------------------------
+
+def gaussian_blur_fft_jax(f, sigma, dx=1.0):
+  """Periodic Gaussian blur of a 2D field using FFT (JAX/JIT-compatible)."""
+  nx, ny = f.shape
+  kx = jnp.fft.fftfreq(nx, d=dx)
+  ky = jnp.fft.fftfreq(ny, d=dx)
+  KX, KY = jnp.meshgrid(kx, ky, indexing="ij")
+  G = jnp.exp(-2.0 * (jnp.pi**2) * sigma**2 * (KX**2 + KY**2))
+  return jnp.real(jnp.fft.ifft2(jnp.fft.fft2(f) * G))
+
+
+def top2_indices(f):
+  """Return top-2 values and (i, j) indices of a 2D array. Shapes are static: (2,)."""
+  flat = f.reshape(-1)
+  idx = jnp.argpartition(flat, -2)[-2:]
+  vals = flat[idx]
+  order = jnp.argsort(vals)[::-1]
+  idx = idx[order]
+  vals = vals[order]
+  ny = f.shape[1]
+  i = idx // ny
+  j = idx % ny
+  return vals, i, j
+
+
+def enforce_min_separation_top2(vals, i, j, r_min):
+  """Collapse the second peak onto the first if they are closer than r_min."""
+  di = i[1] - i[0]
+  dj = j[1] - j[0]
+  keep = di * di + dj * dj >= r_min * r_min
+  vals = jnp.where(keep, vals, jnp.array([vals[0], 0.0]))
+  i = jnp.where(keep, i, jnp.array([i[0], i[0]]))
+  j = jnp.where(keep, j, jnp.array([j[0], j[0]]))
+  return vals, i, j
+
+
+def find_top2_peaks_fft_jax(f, sigma=2.0, r_min=2, dx=1.0):
+  f_s = gaussian_blur_fft_jax(f, sigma=sigma, dx=dx)
+  vals, i, j = top2_indices(f_s)
+  return enforce_min_separation_top2(vals, i, j, r_min)
+
+
+def core_distance_jax(field, dx=1.0, sigma=2.0, r_min=2):
+  """Distance between the two strongest separated peaks. Returns 0 if only one peak."""
+  _, i, j = find_top2_peaks_fft_jax(field, sigma=sigma, r_min=r_min, dx=dx)
+  dxp = dx * (i[1] - i[0])
+  dyp = dx * (j[1] - j[0])
+  dist = jnp.sqrt(dxp * dxp + dyp * dyp)
+  valid = (i[1] != i[0]) | (j[1] != j[0])
+  return jnp.where(valid, dist, 0.0)
+
+
+core_distance_jit = jax.jit(core_distance_jax)
+
+core_distance_batch = jax.jit(
+    jax.vmap(core_distance_jax, in_axes=(0, None, None, None)))

@@ -9,3 +9,8 @@ cfm_vorticity_grf:
 
 cfm_vorticity_grf_small:
 	.venv/bin/python quickpde/driver.py --multi -cn vorticity_grf vorticity.random_seed=range\(0,10\) outdir='data/pyqg_small' axis_points=128
+
+cfm_zarrs:
+	.venv/bin/python quickpde/driver.py --multi -cn vorticity_grf vorticity.random_seed=range\(0,10\) outdir='data/pyqg_zarr' axis_points=128
+
+	.venv/bin/python quickpde/driver.py --multi -cn vorticity_grf vorticity.random_seed=range\(0,10\) outdir='data/pyqg_small' axis_points=128
