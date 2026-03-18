@@ -15,13 +15,29 @@ Simple 2d rotation PDE: One field in a 2-dimensional spatial domain $[-\pi,\pi)^
 ```
 The default initial condition is $u_0(\boldsymbol{x})=\exp(-\alpha((x_1-1)^2 + x_2^2))$, where $\boldsymbol{x}=[x_1, x_2]$ and $\alpha$ is the sharpness of the initial condition.
 
-The right-hand side of this PDE is implemented in {py:func}`quickpde.pdes.Rotation2d.get_rhs`
+The right-hand side of this PDE is implemented in {py:func}`quickpde.pdes.Rotation2d.get_rhs`.
 
-The solution just moves the bump in a circle. Trajectory snapshot matrices will have a slow singular value decay, but the solutions are conceptually very simple, so this is a nice example for nonlinear model order reduction methods.
+The solution moves the bump in a circle. Trajectory snapshot matrices have a slow singular value decay despite the conceptual simplicity, making this a useful benchmark for nonlinear model order reduction methods.
 
+### Default parameters
+
+| Parameter | Value |
+|---|---|
+| `axis_points` | 128 |
+| `dt` | π × 10⁻³ |
+| `t_end` | π |
+| `ic_sharpness` | 80 |
+
+### Running
 
 ```bash
 python quickpde/driver.py -cn rotation
+```
+
+Override resolution or sharpness:
+
+```bash
+python quickpde/driver.py -cn rotation axis_points=256 ic_sharpness=40
 ```
 
 ## Citation

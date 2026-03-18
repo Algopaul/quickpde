@@ -13,12 +13,29 @@ ShallowWater2d
 Wave2d
 ```
 
-1. Package for quickly getting some PDE-solutions of simple equations.
-2. Minimal abstractions so the PDE structure is not hidden.
-3. Using `jax` for speed and GPU acceleration.
+A lightweight package for generating PDE solution trajectories, built for use as training data in scientific machine learning.
 
-Every PDE has default initial conditions that can be modified with unified parameters like `ic_sharpness` to make problems more or less hard.
-Moreover, we include an option for random initialization, so we can generate training data quickly.
+- Minimal abstractions — PDE structure is not hidden behind layers of framework code
+- [JAX](https://github.com/google/jax)-based numerics with JIT compilation and GPU support
+- Hydra configuration with CLI overrides and multi-run sweeps
+- Zarr output for efficient storage and access
 
+## Quick start
 
-A good first example to look at is [Rotation2d](Rotation2d); it is a linear 2d PDE with a solution, in which a Gaussian pulse rotates in a circle.
+```bash
+pip install -e ".[dev]"
+python quickpde/driver.py -cn rotation
+```
+
+## Supported PDEs
+
+| Page | Preset | Description |
+|---|---|---|
+| [Rotation 2D](Rotation2d) | `rotation` | Linear transport, rotating Gaussian bump |
+| [Rotating Detonation Waves](RDE) | `rde` | Nonlinear 1D shock waves, combustion model |
+| [Wave Equation 2D](Wave2d) | `wave2d` | Linear acoustic waves, Hamiltonian |
+| [Shallow Water 2D](ShallowWater2d) | `swe2d` | Nonlinear dispersive waves, Hamiltonian |
+| [Vorticity Transport](Vorticity) | `vorticity`, `vorticity_grf` | 2D incompressible flow |
+
+Every PDE has default initial conditions adjustable via `ic_sharpness`.
+The vorticity PDE additionally supports random Gaussian-field initialization for dataset generation.

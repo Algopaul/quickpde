@@ -29,10 +29,30 @@ and $\lambda(x,0)=0$.
 - injection term $\beta(\eta(x, t); \mu)=\frac{\mu}{1+\exp(r(\eta(x, t)-\eta_p))}$, where $\eta_p=0.5$, $r=5$, and injection parameter $\mu=3.5$
 - energy loss function $\xi(\eta(x,t))=-\epsilon\eta(x, t)$, $\epsilon=0.11$
 
-The right-hand side of this PDE is implemented in {py:func}`quickpde.pdes.RDE1d.get_rhs`
+The right-hand side of this PDE is implemented in {py:func}`quickpde.pdes.RDE1d.get_rhs`.
+
+### Default parameters
+
+| Parameter | Value |
+|---|---|
+| `axis_points` | 512 |
+| `dt` | 1e-3 |
+| `t_end` | 50 |
+| `viscosity` | 1e-4 |
+| `rde.injection_rate` | 3.0 |
+
+The number and shape of detonation waves depends primarily on `rde.injection_rate` (μ). Higher values produce more waves.
+
+### Running
 
 ```bash
 python quickpde/driver.py -cn rde
+```
+
+Sweep over injection rates to observe different wave-count regimes:
+
+```bash
+python quickpde/driver.py --multirun -cn rde rde.injection_rate="1.5,2.5,3.5,4.5"
 ```
 
 ## Citation
