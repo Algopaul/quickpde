@@ -8,7 +8,6 @@ version = "0.1.0"
 dependencies = [
   "numpy",
   "jax",
-  "h5py",
   "matplotlib",
   "hydra-core",
   "hydra-submitit-launcher",
@@ -17,7 +16,8 @@ dependencies = [
   "seaborn",
   "imageio[ffmpeg] (>=2.37.2,<3.0.0)",
   "tqdm",
-  "sphinx-autobuild (>=2025.8.25,<2026.0.0)",
+  "typer",
+  "rich",
   "zarr (>=3.1.5,<4.0.0)",
 ]
 
