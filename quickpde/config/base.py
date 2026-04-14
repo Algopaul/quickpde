@@ -3,6 +3,11 @@ from typing import Tuple
 
 
 @dataclass
+class AllenCahnConfig:
+  epsilon: float = 5e-4
+
+
+@dataclass
 class RDEConfig:
   injection_rate: float = 3.0
 
@@ -40,5 +45,6 @@ class Config:
   ic_sharpness: float = 1.0
   # PDE
   viscosity: float = 1e-4
+  allen_cahn: AllenCahnConfig = field(default_factory=AllenCahnConfig)
   rde: RDEConfig = field(default_factory=RDEConfig)
   vorticity: VorticityConfig = field(default_factory=VorticityConfig)

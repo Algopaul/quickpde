@@ -39,6 +39,7 @@ def main(cfg: Config) -> None:
         trajectory.dtype,
     )
     outfile = get_filename(cfg)
+    logging.info("Saving trajectory to %s", outfile)
     root = zarr.group(outfile)
     root.create_array("data", data=trajectory)
     root.create_array("time", data=timepoints)

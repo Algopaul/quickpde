@@ -3,6 +3,29 @@ from hydra.core.config_store import ConfigStore
 
 from quickpde.config.base import Config, RDEConfig, VorticityConfig
 
+default_schroedinger = Config(
+    'schroedinger',
+    pde='schroedinger',
+    domain_dim=1,
+    axis_points=500,
+    bound_x=(-10.0, 10.0),
+    dt=5e-4,
+    t_end=12.0,
+    store_every=120,
+    use_double_precision=True,
+)
+
+default_allen_cahn = Config(
+    'allen_cahn',
+    pde='allen_cahn',
+    domain_dim=1,
+    axis_points=500,
+    bound_x=(0.0, 1.0),
+    dt=1e-3,
+    t_end=12.0,
+    store_every=60,
+)
+
 default_rotation = Config(
     'rotation',
     pde='rotation_2d',
@@ -83,6 +106,8 @@ vorticity_grf = Config(
 )
 
 cs = ConfigStore.instance()
+cs.store(name="schroedinger", node=default_schroedinger)
+cs.store(name="allen_cahn", node=default_allen_cahn)
 cs.store(name="rotation", node=default_rotation)
 cs.store(name="rde", node=default_rde)
 cs.store(name="vorticity", node=default_vorticity)

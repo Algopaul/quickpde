@@ -47,6 +47,91 @@ class PDE(ABC):
     return self.solver(x0)
 
 
+@PDE.register('allen_cahn')
+class AllenCahn(PDE):
+  """Allen-Cahn equation with time-dependent potential on [0, 1].
+
+  ∂u/∂t = ε ∂²u/∂x² - a(t, x) * f(u)
+
+  where f(u) = u - u³ and a(t, x) = 1.05 + t * sin(2π x).
+
+  Time is augmented into the state as the last element so that the autonomous
+  ODE solver can handle the explicit time dependence.
+  """
+
+  def __init__(self, cfg: Config):
+    self.rhs = self.get_rhs(cfg)
+
+  def get_rhs(self, cfg: Config):
+    x, stepsize = get_grid(cfg)
+    assert isinstance(x, jax.Array)
+    d2dx2 = derivs.fourier_deriv(
+        n_modes=cfg.axis_points, stepsize=stepsize, axis=0, order=2)
+    eps = cfg.allen_cahn.epsilon
+
+    def rhs(state):
+      u, t = state[:-1], state[-1]
+      a = 1.05 + t * jnp.sin(2 * jnp.pi * x)
+      du = eps * d2dx2(u) - a * (u - u**3)
+      return jnp.append(du, 1.0)
+
+    return rhs
+
+  def initial_condition(self, cfg: Config):
+    x, _ = get_grid(cfg)
+    assert isinstance(x, jax.Array)
+    w = jnp.sqrt(20.0)
+    phi_g = lambda b: jnp.exp(-w**2 * jnp.abs(jnp.sin(jnp.pi * (x - b)))**2)
+    u0 = phi_g(0.03) - phi_g(0.7)
+    return jnp.append(u0, 0.0)
+
+  def solve(self, cfg: Config):
+    trajectory, timepoints = super().solve(cfg)
+    return trajectory[..., :-1], timepoints
+
+
+@PDE.register('schroedinger')
+class Schroedinger(PDE):
+  """Schrödinger equation with quartic potential on [-10, 10].
+
+  Splits the complex wavefunction into real and imaginary parts:
+    state = [phi_r, phi_i]  (2N elements)
+
+  d(phi_r)/dt = -0.5 * d²(phi_i)/dx² + V(x) * phi_i
+  d(phi_i)/dt =  0.5 * d²(phi_r)/dx² - V(x) * phi_r
+
+  where V(x) = alpha_2 * x² + alpha_4 * x⁴, alpha_2 = -1/8, alpha_4 = 1/64.
+  """
+
+  def __init__(self, cfg: Config):
+    self.rhs = self.get_rhs(cfg)
+
+  def get_rhs(self, cfg: Config):
+    x, stepsize = get_grid(cfg)
+    assert isinstance(x, jax.Array)
+    d2dx2 = derivs.fourier_deriv(
+        n_modes=cfg.axis_points, stepsize=stepsize, axis=0, order=2)
+    alpha_2 = -1 / 8
+    alpha_4 = alpha_2**2
+    pot = alpha_2 * x**2 + alpha_4 * x**4
+
+    def rhs(state):
+      phi_r, phi_i = jnp.split(state, 2)
+      phi_r_dot = -0.5 * d2dx2(phi_i) + pot * phi_i
+      phi_i_dot = 0.5 * d2dx2(phi_r) - pot * phi_r
+      return jnp.hstack((phi_r_dot, phi_i_dot))
+
+    return rhs
+
+  def initial_condition(self, cfg: Config):
+    x, _ = get_grid(cfg)
+    assert isinstance(x, jax.Array)
+    q_l = -2.0
+    phi_r0 = jnp.pi**(-0.25) * jnp.exp(-(x - q_l)**2 / 2)
+    phi_i0 = jnp.zeros_like(phi_r0)
+    return jnp.hstack((phi_r0, phi_i0))
+
+
 @PDE.register('rotation_2d')
 class Rotation2d(PDE):
 

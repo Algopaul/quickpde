@@ -6,8 +6,10 @@
 
 api/index
 api/modules
+AllenCahn
 RDE
 Rotation2d
+Schroedinger
 Vorticity
 ShallowWater2d
 Wave2d
@@ -31,8 +33,10 @@ python quickpde/driver.py -cn rotation
 
 | Page | Preset | Description |
 |---|---|---|
+| [Allen-Cahn](AllenCahn) | `allen_cahn` | Nonlinear 1D phase-field, time-dependent reaction |
 | [Rotation 2D](Rotation2d) | `rotation` | Linear transport, rotating Gaussian bump |
 | [Rotating Detonation Waves](RDE) | `rde` | Nonlinear 1D shock waves, combustion model |
+| [Schrödinger](Schroedinger) | `schroedinger` | Linear 1D quantum wavepacket, Hamiltonian |
 | [Wave Equation 2D](Wave2d) | `wave2d` | Linear acoustic waves, Hamiltonian |
 | [Shallow Water 2D](ShallowWater2d) | `swe2d` | Nonlinear dispersive waves, Hamiltonian |
 | [Vorticity Transport](Vorticity) | `vorticity`, `vorticity_grf` | 2D incompressible flow |
